@@ -6,17 +6,19 @@ const $body = $('body');
 
 const $storiesLoadingMsg = $('#stories-loading-msg');
 const $allStoriesList = $('#all-stories-list');
+const $favoriteStoriesList = $('#favorite-stories-list');
+const $newStoryForm = $('#newstory-form');
 
 let $favoriteStoryBtns;
 
 const $loginForm = $('#login-form');
 const $signupForm = $('#signup-form');
-const $newStoryForm = $('#newstory-form');
 
 const $navLogin = $('#nav-login');
 const $navUserProfile = $('#nav-user-profile');
 const $navLogOut = $('#nav-logout');
 const $navNewStory = $('#nav-newstory'); // AKA submit
+const $navFavorites = $('#nav-favorites');
 
 // Custom images and icons
 const ICON_favorited = '<i class="fas fa-heart"></i>';
@@ -28,7 +30,7 @@ const ICON_notfavorited = '<i class="far fa-heart"></i>';
  */
 
 function hidePageComponents() {
-	const components = [ $allStoriesList, $loginForm, $signupForm ];
+	const components = [ $allStoriesList, $favoriteStoriesList, $loginForm, $signupForm ];
 	components.forEach(c => c.hide());
 }
 

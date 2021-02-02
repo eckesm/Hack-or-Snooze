@@ -38,7 +38,8 @@
     <a class="nav-link" href="#" id="nav-all">Hack or Snooze</a>
   </div>
   <div class="nav-right">
-    <a class="nav-link" href="#" id="nav-newstory">submit</a>
+    <a class="nav-link hidden" href="#" id="nav-newstory">submit</a>
+    <a class="nav-link hidden" href="#" id="nav-favorites">favorites</a>
     <a class="nav-link" href="#" id="nav-login">login/signup</a>
     <a class="nav-link" href="#" id="nav-user-profile"></a>
     <a class="hidden" id="nav-logout" href="#"><small>(logout)</small></a>
@@ -54,7 +55,30 @@
   <!-- List of all stories -->
   <ol id="all-stories-list" class="stories-list"></ol>
 
+  <!-- New story form -->
+  <form
+      action="#"
+      id="newstory-form"
+      class="story-section hidden"
+      method="post">
+    <h4>Add New Story</h4>
+    <div class="newstory-input">
+      <label for="newstory-title">title</label>
+      <input id="newstory-title">
+    </div>
+    <div class="newstory-input">
+      <label for="newstory-author">author</label>
+      <input id="newstory-author" autocapitalize="words">
+    </div>
+    <div class="new-story-input">
+      <label for="newstory-url">url</label>
+      <input id="newstory-url" type="url">
+    </div>
+    <button type="submit">submit</button>
+  </form>
+
 </section>
+
 
 <!-- Login and signup forms -->
 <section class="account-forms-container container">
@@ -94,32 +118,6 @@
       <input id="signup-password" autocomplete="new-password" type="password">
     </div>
     <button type="submit">create account</button>
-  </form>
-</section>
-
-<!-- Story section -->
-<section class="story-forms-container container">
-
-  <!-- New story form -->
-  <form
-      action="#"
-      id="newstory-form"
-      class="story-form hidden"
-      method="post">
-    <h4>Add New Story</h4>
-    <div class="newstory-input">
-      <label for="newstory-title">title</label>
-      <input id="newstory-title">
-    </div>
-    <div class="newstory-input">
-      <label for="newstory-author">author</label>
-      <input id="newstory-author" autocapitalize="words">
-    </div>
-    <div class="new-story-input">
-      <label for="newstory-url">url</label>
-      <input id="newstory-url" type="url">
-    </div>
-    <button type="submit">submit</button>
   </form>
 </section>
 

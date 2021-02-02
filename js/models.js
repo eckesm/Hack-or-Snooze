@@ -135,21 +135,19 @@ class User {
    * - name: the user's full name
    */
 
-	static async favoriteStory(user, storyId,addDelete) {
-    let apiMethod
-    addDelete==="add"? apiMethod="POST":apiMethod="DELETE"
-    console.log(apiMethod)
-    const response = await axios({
+	static async favoriteStory(user, storyId, addDelete) {
+		let apiMethod;
+		addDelete === 'add' ? (apiMethod = 'POST') : (apiMethod = 'DELETE');
+
+		const response = await axios({
 			url    : `${BASE_URL}/users/${user.username}/favorites/${storyId}`,
 			method : `${apiMethod}`,
 			data   : { token: user.loginToken }
 		});
 
-    console.log('favoriteStory response', response);
-    
-    // return array of user's favorite stories
-    return response.data.user.favorites
-  }
+		// return array of user's favorite stories
+		return response.data.user.favorites;
+	}
 
 	static async signup(username, password, name) {
 		const response = await axios({
@@ -158,7 +156,7 @@ class User {
 			data   : { user: { username, password, name } }
 		});
 
-		let {user} = response.data;
+		let { user } = response.data;
 
 		return new User(
 			{
@@ -185,8 +183,8 @@ class User {
 			data   : { user: { username, password } }
 		});
 
-    let { user } = response.data;
-    // favoriteStories=user.favoriteStories
+		let { user } = response.data;
+		// favoriteStories=user.favoriteStories
 
 		return new User(
 			{
@@ -213,7 +211,7 @@ class User {
 			});
 
 			let { user } = response.data;
-      // favoriteStories=user.favoriteStories
+			// favoriteStories=user.favoriteStories
 
 			return new User(
 				{

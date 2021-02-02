@@ -60,6 +60,8 @@ function logout(evt) {
   console.debug("logout", evt);
   localStorage.clear();
   location.reload();
+  $navNewStory.hide()
+  $navFavorites.hide()
 }
 
 $navLogOut.on("click", logout);
@@ -109,7 +111,11 @@ function saveUserCredentialsInLocalStorage() {
 
 function updateUIOnUserLogin() {
   console.debug("updateUIOnUserLogin");
-
+  
+  // refresh stories to show favorites
+  putStoriesOnPage(allStoriesList.stories)
+  hidePageComponents()
+  
   $allStoriesList.show();
 
   updateNavOnLogin();

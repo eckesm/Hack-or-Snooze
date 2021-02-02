@@ -9,7 +9,8 @@
 function navAllStories(evt) {
   console.debug("navAllStories", evt);
   hidePageComponents();
-  putStoriesOnPage();
+  // refresh all stories to capture additions
+  getAndShowStoriesOnStart();
 }
 
 $body.on("click", "#nav-all", navAllStories);
@@ -33,6 +34,8 @@ function updateNavOnLogin() {
   $navLogin.hide();
   $navLogOut.show();
   $navUserProfile.text(`${currentUser.username}`).show();
+  $navNewStory.show()
+  $navFavorites.show()
 }
 
 
@@ -47,8 +50,14 @@ function navNewStoryClick(evt){
     hidePageComponents()
     $loginForm.show();
     $signupForm.show();
-    alert("You must be logged-in to submit a new story.")
   }
 }
 
 $navNewStory.on("click",navNewStoryClick)
+
+function navFavoritesClick(evt){
+  console.debug("navFavoritesClick",evt)
+  putFavStoriesOnPage()
+}
+
+$navFavorites.on("click",navFavoritesClick)

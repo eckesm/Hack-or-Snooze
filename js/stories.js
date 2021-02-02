@@ -1,7 +1,7 @@
 'use strict';
 
 // This is the global list of the stories, an instance of StoryList
-let storyList;
+let allStoriesList
 let newStory;
 
 /******************************************************************************
@@ -9,10 +9,10 @@ let newStory;
 /** Get and show stories when site first loads. */
 
 async function getAndShowStoriesOnStart() {
-	storyList = await StoryList.getStories();
+	allStoriesList = await StoryList.getStories();
 	$storiesLoadingMsg.remove();
-
-	putStoriesOnPage();
+  // console.log(storyList.stories)
+	putStoriesOnPage(allStoriesList.stories);
 }
 
 /**
@@ -24,19 +24,22 @@ async function getAndShowStoriesOnStart() {
 
 function generateStoryMarkup(story) {
 	// console.debug("generateStoryMarkup", story);
-	let favoriteTF = false;
+  let favoriteHtml=""
+  let favoriteTF = false;
 	let favoriteIcon = ICON_notfavorited;
 
 	// console.log(story.storyId)
 	if (currentUser) {
+    
 		favoriteTF = checkForFavStory(currentUser, story.storyId);
-		favoriteTF ? (favoriteIcon = ICON_favorited) : (favoriteIcon = ICON_notfavorited);
-	}
+    favoriteTF ? (favoriteIcon = ICON_favorited) : (favoriteIcon = ICON_notfavorited);
+    favoriteHtml=`<small class="story-favorite" data-favorite="${favoriteTF}">${favoriteIcon}</small>`
+  }
 
 	const hostName = story.getHostName();
 	return $(`
     <li id="${story.storyId}">
-      <small class="story-favorite" data-favorite="${favoriteTF}">${favoriteIcon}</small>
+      ${favoriteHtml}
       <a href="${story.url}" target="a_blank" class="story-link">
         ${story.title}
       </a>
@@ -49,13 +52,14 @@ function generateStoryMarkup(story) {
 
 /** Gets list of stories from server, generates their HTML, and puts on page. */
 
-function putStoriesOnPage() {
-	console.debug('putStoriesOnPage');
+function putStoriesOnPage(storiesArray) {
+  console.debug('putStoriesOnPage');
+  // console.log(storiesArray)
 
 	$allStoriesList.empty();
 
 	// loop through all of our stories and generate HTML for them
-	for (let story of storyList.stories) {
+	for (let story of storiesArray) {
 		const $story = generateStoryMarkup(story);
 		$allStoriesList.append($story);
 	}
@@ -90,11 +94,9 @@ async function favoriteStory(evt) {
 
 	const storyId = $(this).parent().attr('id');
 	let favoriteTF = $(this).attr('data-favorite');
-	console.log(favoriteTF);
 
 	let addDelete;
 	favoriteTF === 'true' ? (addDelete = 'delete') : (addDelete = 'add');
-	console.log(addDelete);
 	currentUser.favorites = await User.favoriteStory(currentUser, storyId, addDelete);
 
 	if (addDelete === 'add') {
@@ -112,4 +114,13 @@ function checkForFavStory(user, storyId) {
 		if (story.storyId === storyId) return true;
 	}
 	return false;
+}
+
+function putFavStoriesOnPage() {
+  // load all favorite stories in Story class before sending it putStoriesOnPage()
+  const favoriteStoriesList=[]
+  for (let story of currentUser.favorites){
+    favoriteStoriesList.push(new Story(story))
+  }
+	putStoriesOnPage(favoriteStoriesList)
 }
