@@ -34,3 +34,21 @@ function updateNavOnLogin() {
   $navLogOut.show();
   $navUserProfile.text(`${currentUser.username}`).show();
 }
+
+
+/** When a logged in user clicks the "submit" link, bring the user to the "Add New Story" form; if a user is not logged in, load the account forms so the user can login or create an account */
+
+function navNewStoryClick(evt){
+  console.debug("navNewStoryClick", evt)
+  if (currentUser){
+    hidePageComponents()
+    $newStoryForm.show()
+  } else {
+    hidePageComponents()
+    $loginForm.show();
+    $signupForm.show();
+    alert("You must be logged-in to submit a new story.")
+  }
+}
+
+$navNewStory.on("click",navNewStoryClick)
