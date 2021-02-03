@@ -10,6 +10,7 @@ const $favoriteStoriesList = $('#favorite-stories-list');
 const $newStoryForm = $('#newstory-form');
 
 let $favoriteStoryBtns;
+let $deleteOwnBtns;
 
 const $loginForm = $('#login-form');
 const $signupForm = $('#signup-form');
@@ -19,10 +20,12 @@ const $navUserProfile = $('#nav-user-profile');
 const $navLogOut = $('#nav-logout');
 const $navNewStory = $('#nav-newstory'); // AKA submit
 const $navFavorites = $('#nav-favorites');
+const $navSubmissions = $('#nav-submissions');
 
 // Custom images and icons
 const ICON_favorited = '<i class="fas fa-heart"></i>';
 const ICON_notfavorited = '<i class="far fa-heart"></i>';
+const ICON_deleteStory = '<i class="fas fa-trash"></i>';
 
 /** To make it easier for individual components to show just themselves, this
  * is a useful function that hides pretty much everything on the page. After
@@ -30,7 +33,7 @@ const ICON_notfavorited = '<i class="far fa-heart"></i>';
  */
 
 function hidePageComponents() {
-	const components = [ $allStoriesList, $favoriteStoriesList, $loginForm, $signupForm ];
+	const components = [ $allStoriesList, $favoriteStoriesList, $newStoryForm, $loginForm, $signupForm ];
 	components.forEach(c => c.hide());
 }
 

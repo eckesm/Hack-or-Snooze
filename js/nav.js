@@ -36,6 +36,7 @@ function updateNavOnLogin() {
   $navUserProfile.text(`${currentUser.username}`).show();
   $navNewStory.show()
   $navFavorites.show()
+  $navSubmissions.show()
 }
 
 
@@ -43,21 +44,24 @@ function updateNavOnLogin() {
 
 function navNewStoryClick(evt){
   console.debug("navNewStoryClick", evt)
-  if (currentUser){
-    hidePageComponents()
-    $newStoryForm.show()
-  } else {
-    hidePageComponents()
-    $loginForm.show();
-    $signupForm.show();
-  }
+  hidePageComponents()
+  $newStoryForm.show()
 }
 
 $navNewStory.on("click",navNewStoryClick)
 
 function navFavoritesClick(evt){
   console.debug("navFavoritesClick",evt)
-  putFavStoriesOnPage()
+  hidePageComponents()
+  putStoriesToArrayThenOnPage(currentUser.favorites)
 }
 
 $navFavorites.on("click",navFavoritesClick)
+
+function navSubmissionsClick(evt){
+  console.debug("navSubmissionsClick",evt)
+  hidePageComponents()
+  putStoriesToArrayThenOnPage(currentUser.ownStories)
+}
+
+$navSubmissions.on("click",navSubmissionsClick)

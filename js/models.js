@@ -24,7 +24,8 @@ class Story {
 
 	getHostName() {
 		const urlString = this.url;
-		const hostnameStart = urlString.indexOf('//');
+    const hostnameStart = urlString.indexOf('//');
+    // console.log("this",this)
 		let hostnameEnd = urlString.indexOf('/', hostnameStart + 2);
 
 		// remove port string
@@ -36,7 +37,7 @@ class Story {
 
 		// console.log(hostname)
 		return hostname;
-	}
+  }
 }
 
 /******************************************************************************
@@ -102,7 +103,28 @@ class StoryList {
 			url       : story.url,
 			username  : story.username
 		});
-	}
+  }
+
+
+  static async deleteStory(user,storyId){
+    const response = await axios({
+			url    : `${BASE_URL}/stories/${storyId}`,
+			method : 'DELETE',
+			data   : {token : user.loginToken}
+    })
+    
+    let { story } = response.data;
+
+		return new Story({
+			author    : story.author,
+			createdAt : story.createdAt,
+			storyId   : story.storyId,
+			title     : story.title,
+			url       : story.url,
+			username  : story.username
+		});
+  }
+
 }
 
 /******************************************************************************
