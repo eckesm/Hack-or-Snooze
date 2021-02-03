@@ -1,16 +1,34 @@
+/* ****************************************************************************
+------------------------ Settings & Table of Contents -------------------------
+**************************************************************************** */
 'use strict';
-
 const BASE_URL = 'https://hack-or-snooze-v3.herokuapp.com';
 
-/******************************************************************************
- * Story: a single story in the system
+/** TABLE OF CONTENTS
+ * Story class
+ * - getHostName()
+ * 
+ * StoryList class
+ * - getStories()
+ * - addEditStory()
+ * - deleteStory()
+ * 
+ * User class
+ * - favoriteStory()
+ * - signup()
+ * - login()
+ * - loginViaStoredCredentials()
  */
 
+/* ****************************************************************************
+-------------------------------- Story class ----------------------------------
+**************************************************************************** */
+
+/** Story: a single story in the system */
 class Story {
 	/** Make instance of Story from data object about story:
-   *   - {title, author, url, username, storyId, createdAt}
+   *  - {title, author, url, username, storyId, createdAt}
    */
-
 	constructor({ storyId, title, author, url, username, createdAt }) {
 		this.storyId = storyId;
 		this.title = title;
@@ -21,42 +39,42 @@ class Story {
 	}
 
 	/** Parses hostname out of URL and returns it. */
-
 	getHostName() {
 		const urlString = this.url;
-    const hostnameStart = urlString.indexOf('//');
-    // console.log("this",this)
+		const hostnameStart = urlString.indexOf('//');
 		let hostnameEnd = urlString.indexOf('/', hostnameStart + 2);
 
-		// remove port string
+		// remove port string, if present, and make end of string
 		const urlPort = urlString.indexOf(':', hostnameStart);
 		if (urlPort > hostnameStart && urlPort < hostnameEnd) hostnameEnd = urlPort;
 
+		// if there is no terminal "/", take the entire rest of the url; otherwise use the "/" following the intiail "//" to indicate the end of the hostname part of the url
 		let hostname =
 			hostnameEnd === -1 ? urlString.slice(hostnameStart + 2) : urlString.slice(hostnameStart + 2, hostnameEnd);
 
 		// console.log(hostname)
 		return hostname;
-  }
+	}
 }
 
-/******************************************************************************
- * List of Story instances: used by UI to show story lists in DOM.
- */
+/* ****************************************************************************
+----------------------------- StoryList class ---------------------------------
+**************************************************************************** */
 
+/** List of Story instances: used by UI to show story lists in DOM. */
 class StoryList {
+	/** Make instance of StoryList from instance of Story. */
 	constructor(stories) {
 		this.stories = stories;
-	}
+  }
+  // __________________________________________________________________________
 
 	/** Generate a new StoryList. It:
-   *
    *  - calls the API
    *  - builds an array of Story instances
    *  - makes a single StoryList instance out of that
    *  - returns the StoryList instance.
    */
-
 	static async getStories() {
 		// Note presence of `static` keyword: this indicates that getStories is
 		//  **not** an instance method. Rather, it is a method that is called on the
@@ -74,27 +92,39 @@ class StoryList {
 
 		// build an instance of our own class using the new array of stories
 		return new StoryList(stories);
-	}
+  }
+  // __________________________________________________________________________
 
-	/** Adds story data to API, makes a Story instance, adds it to story list.
-   * - user - the current instance of User who will post the story
+	/** Adds story data to API and makes a Story instance.
+   * - user token: the current instance of User who will post the story
    * - obj of {title, author, url}
+   * 
+   * If passed a optional third input of an existing story's id, will send 
+   * edited story data to API and make a Story instance.
    *
-   * Returns the new Story instance
+   * Returns the new or updated Story instance
    */
+	static async addEditStory(user, addEditStory, storyId) {
+		let apiMethod, apiUrl;
+		if (editStoryId === undefined) {
+			apiUrl = `${BASE_URL}/stories`;
+			apiMethod = 'POST';
+		}
+		else {
+			apiUrl = `${BASE_URL}/stories/${storyId}`;
+			apiMethod = 'PATCH';
+		}
 
-	static async addStory(user, newStory) {
 		const response = await axios({
-			url    : `${BASE_URL}/stories`,
-			method : 'POST',
+			url    : apiUrl,
+			method : apiMethod,
 			data   : {
 				token : user.loginToken,
-				story : { author: newStory.author, title: newStory.title, url: newStory.url }
+				story : { author: addEditStory.author, title: addEditStory.title, url: addEditStory.url }
 			}
 		});
 
 		let { story } = response.data;
-
 		return new Story({
 			author    : story.author,
 			createdAt : story.createdAt,
@@ -104,17 +134,24 @@ class StoryList {
 			username  : story.username
 		});
   }
+  // __________________________________________________________________________
 
-
-  static async deleteStory(user,storyId){
-    const response = await axios({
+	/** Sends delete story data to API, makes a Story instance of the deleted 
+   * story.
+   * - token - the token for the owner/creator of the story (only a story's 
+   *   creator/owner can delete it)
+   * - story ID of the story to be deleted
+   *
+   * Returns the new Story instance
+   */
+	static async deleteStory(user, storyId) {
+		const response = await axios({
 			url    : `${BASE_URL}/stories/${storyId}`,
 			method : 'DELETE',
-			data   : {token : user.loginToken}
-    })
-    
-    let { story } = response.data;
+			data   : { token: user.loginToken }
+		});
 
+		let { story } = response.data;
 		return new Story({
 			author    : story.author,
 			createdAt : story.createdAt,
@@ -123,20 +160,19 @@ class StoryList {
 			url       : story.url,
 			username  : story.username
 		});
-  }
-
+	}
 }
 
-/******************************************************************************
- * User: a user in the system (only used to represent the current user)
- */
+/* ****************************************************************************
+-------------------------------- User class -----------------------------------
+**************************************************************************** */
 
+/** User: a user in the system (only used to represent the current user) */
 class User {
 	/** Make user instance from obj of user data and a token:
    *   - {username, name, createdAt, favorites[], ownStories[]}
    *   - token
    */
-
 	constructor({ username, name, createdAt, favorites = [], ownStories = [] }, token) {
 		this.username = username;
 		this.name = name;
@@ -148,15 +184,15 @@ class User {
 
 		// store the login token on the user so it's easy to find for API calls.
 		this.loginToken = token;
-	}
+  }
+  // __________________________________________________________________________
 
-	/** Register new user in API, make User instance & return it.
-   *
-   * - username: a new username
-   * - password: a new password
-   * - name: the user's full name
-   */
-
+	/** Sends data to API to add or remote a story favorite from a user. 
+   * - will use POST as method to add a favoite
+   * - will use DELETE as method to remove a favorite
+   * 
+   * Returns an array of the user's updated favorite story objects.
+  */
 	static async favoriteStory(user, storyId, addDelete) {
 		let apiMethod;
 		addDelete === 'add' ? (apiMethod = 'POST') : (apiMethod = 'DELETE');
@@ -167,10 +203,15 @@ class User {
 			data   : { token: user.loginToken }
 		});
 
-		// return array of user's favorite stories
 		return response.data.user.favorites;
-	}
+  }
+  // __________________________________________________________________________
 
+	/** Register new user in API, make User instance & return it.
+   * - username: a new username
+   * - password: a new password
+   * - name: the user's full name
+   */
 	static async signup(username, password, name) {
 		const response = await axios({
 			url    : `${BASE_URL}/signup`,
@@ -179,7 +220,6 @@ class User {
 		});
 
 		let { user } = response.data;
-
 		return new User(
 			{
 				username   : user.username,
@@ -190,14 +230,13 @@ class User {
 			},
 			response.data.token
 		);
-	}
+  }
+  // __________________________________________________________________________
 
 	/** Login in user with API, make User instance & return it.
-
    * - username: an existing user's username
    * - password: an existing user's password
    */
-
 	static async login(username, password) {
 		const response = await axios({
 			url    : `${BASE_URL}/login`,
@@ -206,8 +245,6 @@ class User {
 		});
 
 		let { user } = response.data;
-		// favoriteStories=user.favoriteStories
-
 		return new User(
 			{
 				username   : user.username,
@@ -218,12 +255,12 @@ class User {
 			},
 			response.data.token
 		);
-	}
+  }
+  // __________________________________________________________________________
 
 	/** When we already have credentials (token & username) for a user,
    *   we can log them in automatically. This function does that.
    */
-
 	static async loginViaStoredCredentials(token, username) {
 		try {
 			const response = await axios({
@@ -233,8 +270,6 @@ class User {
 			});
 
 			let { user } = response.data;
-			// favoriteStories=user.favoriteStories
-
 			return new User(
 				{
 					username   : user.username,

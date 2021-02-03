@@ -1,16 +1,27 @@
+/* ****************************************************************************
+------------------------ Settings & Table of Contents -------------------------
+**************************************************************************** */
 "use strict";
 
 // global to hold the User instance of the currently-logged-in user
 let currentUser;
 
-/******************************************************************************
- * User login/signup/login
+/** TABLE OF CONTENTS 
+ * - login() + event listener
+ * - signup() + event listener
+ * - logout() + event listener
+ * - checkForRememberedUser()
+ * - saveUserCredentialsInLocalStorage()
+ * - updateUIOnUserLogin()
  */
 
-/** Handle login form submission. If login ok, sets up the user instance */
+/* ****************************************************************************
+-------------------------- User Login/Signup/Logout UI ------------------------
+**************************************************************************** */
 
+/** Handle login form submission. If login ok, sets up the user instance */
 async function login(evt) {
-  console.debug("login", evt);
+  // console.debug("login", evt);
   evt.preventDefault();
 
   // grab the username and password
@@ -28,11 +39,11 @@ async function login(evt) {
 }
 
 $loginForm.on("submit", login);
+// ____________________________________________________________________________
 
 /** Handle signup form submission. */
-
 async function signup(evt) {
-  console.debug("signup", evt);
+  // console.debug("signup", evt);
   evt.preventDefault();
 
   const name = $("#signup-name").val();
@@ -50,32 +61,27 @@ async function signup(evt) {
 }
 
 $signupForm.on("submit", signup);
+// ____________________________________________________________________________
 
 /** Handle click of logout button
- *
- * Remove their credentials from localStorage and refresh page
+ * - Remove their credentials from localStorage and refresh page
  */
-
 function logout(evt) {
-  console.debug("logout", evt);
+  // console.debug("logout", evt);
   localStorage.clear();
   location.reload();
-  $navNewStory.hide()
-  $navFavorites.hide()
 }
 
 $navLogOut.on("click", logout);
+// ____________________________________________________________________________
 
-/******************************************************************************
- * Storing/recalling previously-logged-in-user with localStorage
+ /** Storing/recalling previously-logged-in-user with localStorage
+ * - If there are user credentials in local storage, use those to log in that 
+ *   user.
+ * - This is meant to be called on page load, just once.
  */
-
-/** If there are user credentials in local storage, use those to log in
- * that user. This is meant to be called on page load, just once.
- */
-
 async function checkForRememberedUser() {
-  console.debug("checkForRememberedUser");
+  // console.debug("checkForRememberedUser");
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
   if (!token || !username) return false;
@@ -83,34 +89,28 @@ async function checkForRememberedUser() {
   // try to log in with these credentials (will be null if login failed)
   currentUser = await User.loginViaStoredCredentials(token, username);
 }
+// ____________________________________________________________________________
 
 /** Sync current user information to localStorage.
- *
- * We store the username/token in localStorage so when the page is refreshed
- * (or the user revisits the site later), they will still be logged in.
+ * - We store the username/token in localStorage so when the page is refreshed 
+ *   (or the user revisits the site later), they will still be logged in.
  */
-
 function saveUserCredentialsInLocalStorage() {
-  console.debug("saveUserCredentialsInLocalStorage");
+  // console.debug("saveUserCredentialsInLocalStorage");
   if (currentUser) {
     localStorage.setItem("token", currentUser.loginToken);
     localStorage.setItem("username", currentUser.username);
   }
 }
-
-/******************************************************************************
- * General UI stuff about users
- */
+// ____________________________________________________________________________
 
 /** When a user signs up or registers, we want to set up the UI for them:
- *
  * - show the stories list
  * - update nav bar options for logged-in user
  * - generate the user profile part of the page
  */
-
 function updateUIOnUserLogin() {
-  console.debug("updateUIOnUserLogin");
+  // console.debug("updateUIOnUserLogin");
   
   // refresh stories to show favorites
   putStoriesOnPage(allStoriesList.stories)
